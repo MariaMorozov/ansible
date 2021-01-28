@@ -1,16 +1,18 @@
-me: Create AWS EC2 Instance
+---
+- name: Create AWS EC2 Instance
   hosts: local
-  connection: local
+  # connection: local
   gather_facts: false
   become: yes
   vars:
-    keypair: mariaINT2020
+    ansible_python_interpreter: /usr/bin/python3
+    keypair: keyG
     instance_type: t2.micro
     image: ami-0dd9f0e7df0f0a138
     region: us-east-2
     count: 1
     security_group: MySecurityGroup
-    vpc_subnet_id: subnet-c4796bbe
+    vpc_subnet_id: subnet-ac97d5e0
     aws_access_key: 
     aws_secret_key: 
   tasks:
@@ -43,19 +45,19 @@ me: Create AWS EC2 Instance
       # port: 22
       # state: started
       #loop: "{{ ec2.instances }}"
-- name: Docker install on first instance
+- name: ping on first instance
   hosts: ec2-1
-  gather_facts: false
-  become: yes
+  #gather_facts: false
+  #become: yes
   tasks:
     - ping:
 
-    - name: Make sure docker is installed
-      apt:
-        name: docker.io
-        state: present
-        update_cache: yes
-    - name: Docker service start
-      service:
-        name: docker
-        state: started
+            # - name: Make sure docker is installed
+            #apt:
+            #name: docker.io
+            # state: present
+            # update_cache: yes
+            #- name: Docker service start
+            # service:
+            # name: docker
+            # state: started

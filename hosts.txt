@@ -1,0 +1,7 @@
+
+[test]
+testserver ansible_host=172.31.47.38
+
+[local]
+localhost
+
