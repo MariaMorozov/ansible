@@ -1,0 +1,10 @@
+---
+# defaults file for instances_creation
+ansible_python_interpreter: /usr/bin/python3
+keypair: keyG
+instance_type: t2.micro
+image: ami-0dd9f0e7df0f0a138
+region: us-east-2
+count: 1
+security_group: launch-wizard-2
+vpc_subnet_id: subnet-ac97d5e0

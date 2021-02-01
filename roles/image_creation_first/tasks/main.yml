@@ -1,0 +1,50 @@
+---
+- ping:
+
+- name: Make sure docker is installed
+  apt:
+    name:
+      - docker.io
+      - python3-pip
+    state: present
+    update_cache: yes
+
+- name: make sure docker-py installed
+  become: yes
+  pip:
+    name: docker-py
+
+- name: Docker service start
+  service:
+    name: docker
+    state: started
+
+- name: Docker service enable
+  service:
+    name: docker
+    enabled: yes
+
+- name: Clone Git Repository
+  git:
+    repo: https://github.com/MariaMorozov/MyPythonProject.git
+    dest: /home/ubuntu/myproject
+
+- name: Log into DockerHub
+  become: yes
+  docker_login:
+    username: "mariamorozov"
+    password: "123Octavian"
+    api_version: auto
+
+- name: Build an image and push to docker hub
+  become: yes
+  docker_image:
+    build:
+      path: /home/ubuntu/myproject/docker_api
+    name: mariamorozov/myapi1
+    tag: v11
+    repository: mariamorozov/myapi1
+    push: yes
+    source: build
+
+# tasks file for image_creation_first

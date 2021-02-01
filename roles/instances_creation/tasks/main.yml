@@ -1,0 +1,74 @@
+---
+- name: Make sure that pip3 is installed
+  apt:
+    name:
+      - python3-pip
+    state: present
+
+- name: Make Sure boto,boto3,docker-py are Installed
+  pip:
+    name:
+      - boto
+      - boto3
+    state: present
+
+- name: Create Instance
+  ec2:
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    key_name: "{{ keypair }}"
+    instance_type: "{{ instance_type }}"
+    image: "{{ image }}"
+    region: "{{ region }}"
+    wait: yes
+    group: "{{ security_group }}"
+    vpc_subnet_id: "{{ vpc_subnet_id }}"
+    assign_public_ip: yes
+    count: "{{ count }}"
+    instance_tags:
+      Name: FirstInstans
+  register: ec21   #Start Creation of AWS EC2 Server
+
+- name: Create Second Instance
+  ec2:
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    key_name: "{{ keypair }}"
+    instance_type: "{{ instance_type }}"
+    image: "{{ image }}"
+    region: "{{ region }}"
+    wait: yes
+    group: "{{ security_group }}"
+    vpc_subnet_id: "{{ vpc_subnet_id }}"
+    assign_public_ip: yes
+    count: "{{ count }}"
+    instance_tags:
+      Name: SecondInstans
+  register: ec22   #Start Creation of AWS EC2 Server
+
+- name: Add new instance to host group
+  add_host:
+    hostname: "{{ item.private_ip }}"
+    groupname: ec2-1
+  loop: "{{ ec21.instances }}"
+
+- name: Add new instance to host group
+  add_host:
+    hostname: "{{ item.private_ip }}"
+    groupname: ec2-2
+  loop: "{{ ec22.instances }}"
+
+- name: Wait for SSH to come up
+  delegate_to: "{{ item.public_dns_name }}"
+  wait_for_connection:
+    delay: 60
+    timeout: 320
+  loop: "{{ ec21.instances }}"
+
+- name: Wait for SSH to come up
+  delegate_to: "{{ item.public_dns_name }}"
+  wait_for_connection:
+    delay: 60
+    timeout: 320
+  loop: "{{ ec22.instances }}"
+ 

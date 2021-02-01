@@ -1,0 +1,26 @@
+---
+- name: Create AWS EC2 Instance
+  hosts: local
+  gather_facts: no
+  become: yes
+  vars_files:
+    - keys.yml
+  
+  roles:
+    - instances_creation
+
+- name: Install docker, clone from github, build and push to docker hub new image on first instance
+  hosts: ec2-1
+  become: yes
+  gather_facts: yes
+
+  roles:
+     - image_creation_first
+  
+- name: Deploy the image on Second Instance
+  hosts: ec2-2
+  become: yes
+  gather_facts: yes
+  
+  roles:
+    - image_deploy_second

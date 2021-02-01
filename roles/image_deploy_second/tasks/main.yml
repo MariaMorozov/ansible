@@ -1,0 +1,32 @@
+---
+- ping:
+
+- name: Make sure docker is installed
+  apt:
+    name:
+      - docker.io
+      - python3-pip
+    state: present
+    update_cache: yes
+
+- name: make sure docker-py installed
+  become: yes
+  pip:
+    name: docker-py
+
+- name: Docker service start
+  service:
+    name: docker
+    state: started
+
+- name: Docker service enable
+  service:
+    name: docker
+    enabled: yes
+
+- name: pull a Docker Image
+  become: yes
+  docker_image:
+    name: mariamorozov/myapi1:v11
+
+# tasks file for image_deploy_second
